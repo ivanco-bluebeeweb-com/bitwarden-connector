@@ -1,0 +1,1485 @@
+{
+  "manifest_schema_version": 3,
+  "sdk_version": "5.13.0",
+  "app_id": "bitwarden-connector",
+  "version": "0.1.0",
+  "name": "Bitwarden",
+  "description": "Connect your own Bitwarden organization (Public API, OAuth2 client_credentials) to manage members, collections, groups, event logs, and policies -- full read/write plus value-add organization health and inactive-member reports.",
+  "icon": "icon.svg",
+  "actions_explicit": true,
+  "system": false,
+  "capabilities": [
+    "bitwarden:read",
+    "bitwarden:write"
+  ],
+  "tools": [
+    {
+      "name": "connect_bitwarden",
+      "description": "Connect your own Bitwarden organization by saving its Public API client_id/client_secret, after checking they actually work.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "label": {
+            "default": "",
+            "description": "A friendly name for this organization, e.g. 'Acme Corp'.",
+            "title": "Label",
+            "type": "string"
+          },
+          "client_id": {
+            "description": "Organization API client_id, format organization.{uuid} (Settings > My Organization > API Key).",
+            "title": "Client Id",
+            "type": "string"
+          },
+          "client_secret": {
+            "description": "Organization API client_secret from the same API Key screen.",
+            "title": "Client Secret",
+            "type": "string"
+          }
+        },
+        "required": [
+          "client_id",
+          "client_secret"
+        ],
+        "title": "ConnectBitwardenParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "label": {
+            "default": "",
+            "title": "Label",
+            "type": "string"
+          },
+          "member_count": {
+            "default": 0,
+            "title": "Member Count",
+            "type": "integer"
+          }
+        },
+        "title": "ConnectBitwardenResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_bitwarden-connector_chat"
+    },
+    {
+      "name": "disconnect_bitwarden",
+      "description": "Disconnect a Bitwarden organization: deletes the saved client_id/client_secret. Nothing in Bitwarden itself is changed.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "description": "The connection id to disconnect, from list_connections.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "connection_id"
+        ],
+        "title": "DisconnectBitwardenParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "deleted": {
+            "default": false,
+            "title": "Deleted",
+            "type": "boolean"
+          },
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          }
+        },
+        "title": "DeleteResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_bitwarden-connector_chat"
+    },
+    {
+      "name": "list_connections",
+      "description": "List the connected Bitwarden organizations.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {},
+        "title": "ListConnectionsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "BitwardenConnection": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "label": {
+                "default": "",
+                "title": "Label",
+                "type": "string"
+              },
+              "member_count": {
+                "default": 0,
+                "title": "Member Count",
+                "type": "integer"
+              }
+            },
+            "title": "BitwardenConnection",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "connections": {
+            "items": {
+              "$ref": "#/$defs/BitwardenConnection"
+            },
+            "title": "Connections",
+            "type": "array"
+          }
+        },
+        "title": "ConnectionList",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_bitwarden-connector_chat"
+    },
+    {
+      "name": "list_members",
+      "description": "List members of the connected Bitwarden organization.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Bitwarden organization to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "ListMembersParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "Member": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "email": {
+                "default": "",
+                "title": "Email",
+                "type": "string"
+              },
+              "name": {
+                "default": "",
+                "title": "Name",
+                "type": "string"
+              },
+              "status": {
+                "default": 0,
+                "title": "Status",
+                "type": "integer"
+              },
+              "status_label": {
+                "default": "",
+                "title": "Status Label",
+                "type": "string"
+              },
+              "type": {
+                "default": 0,
+                "title": "Type",
+                "type": "integer"
+              },
+              "two_factor_enabled": {
+                "default": false,
+                "title": "Two Factor Enabled",
+                "type": "boolean"
+              },
+              "external_id": {
+                "default": "",
+                "title": "External Id",
+                "type": "string"
+              }
+            },
+            "title": "Member",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "members": {
+            "items": {
+              "$ref": "#/$defs/Member"
+            },
+            "title": "Members",
+            "type": "array"
+          }
+        },
+        "title": "MemberList",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_bitwarden-connector_chat"
+    },
+    {
+      "name": "get_member",
+      "description": "Read one Bitwarden organization member in full by id.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Bitwarden organization to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "member_id": {
+            "description": "The member's Bitwarden id, from list_members.",
+            "title": "Member Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "member_id"
+        ],
+        "title": "GetMemberParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "email": {
+            "default": "",
+            "title": "Email",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "status": {
+            "default": 0,
+            "title": "Status",
+            "type": "integer"
+          },
+          "status_label": {
+            "default": "",
+            "title": "Status Label",
+            "type": "string"
+          },
+          "type": {
+            "default": 0,
+            "title": "Type",
+            "type": "integer"
+          },
+          "two_factor_enabled": {
+            "default": false,
+            "title": "Two Factor Enabled",
+            "type": "boolean"
+          },
+          "external_id": {
+            "default": "",
+            "title": "External Id",
+            "type": "string"
+          }
+        },
+        "title": "Member",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_bitwarden-connector_chat"
+    },
+    {
+      "name": "invite_member",
+      "description": "Invite a new member to the connected Bitwarden organization by email.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Bitwarden organization to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "email": {
+            "description": "Email address to invite.",
+            "title": "Email",
+            "type": "string"
+          },
+          "type": {
+            "default": 2,
+            "description": "Bitwarden member type: 0=Owner, 1=Admin, 2=User, 3=Manager, 4=Custom.",
+            "title": "Type",
+            "type": "integer"
+          },
+          "external_id": {
+            "default": "",
+            "description": "Optional external id (e.g. from your HR/IdP system) to correlate this member.",
+            "title": "External Id",
+            "type": "string"
+          },
+          "collection_ids": {
+            "description": "Collection ids to grant access to on invite (optional).",
+            "items": {
+              "type": "string"
+            },
+            "title": "Collection Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "email"
+        ],
+        "title": "InviteMemberParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "email": {
+            "default": "",
+            "title": "Email",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "status": {
+            "default": 0,
+            "title": "Status",
+            "type": "integer"
+          },
+          "status_label": {
+            "default": "",
+            "title": "Status Label",
+            "type": "string"
+          },
+          "type": {
+            "default": 0,
+            "title": "Type",
+            "type": "integer"
+          },
+          "two_factor_enabled": {
+            "default": false,
+            "title": "Two Factor Enabled",
+            "type": "boolean"
+          },
+          "external_id": {
+            "default": "",
+            "title": "External Id",
+            "type": "string"
+          }
+        },
+        "title": "Member",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_bitwarden-connector_chat"
+    },
+    {
+      "name": "update_member",
+      "description": "Update selected fields of an existing Bitwarden member (type and/or external_id). Only given fields change.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Bitwarden organization to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "member_id": {
+            "description": "The member's Bitwarden id, from list_members.",
+            "title": "Member Id",
+            "type": "string"
+          },
+          "type": {
+            "default": -1,
+            "description": "New Bitwarden member type (0=Owner..4=Custom). -1 = leave unchanged.",
+            "title": "Type",
+            "type": "integer"
+          },
+          "external_id": {
+            "default": "",
+            "description": "New external id. Empty = leave unchanged.",
+            "title": "External Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "member_id"
+        ],
+        "title": "UpdateMemberParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "email": {
+            "default": "",
+            "title": "Email",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "status": {
+            "default": 0,
+            "title": "Status",
+            "type": "integer"
+          },
+          "status_label": {
+            "default": "",
+            "title": "Status Label",
+            "type": "string"
+          },
+          "type": {
+            "default": 0,
+            "title": "Type",
+            "type": "integer"
+          },
+          "two_factor_enabled": {
+            "default": false,
+            "title": "Two Factor Enabled",
+            "type": "boolean"
+          },
+          "external_id": {
+            "default": "",
+            "title": "External Id",
+            "type": "string"
+          }
+        },
+        "title": "Member",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_bitwarden-connector_chat"
+    },
+    {
+      "name": "remove_member",
+      "description": "Permanently remove a member from the connected Bitwarden organization. Cannot be undone.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Bitwarden organization to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "member_id": {
+            "description": "The member's Bitwarden id, from list_members.",
+            "title": "Member Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "member_id"
+        ],
+        "title": "RemoveMemberParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "deleted": {
+            "default": false,
+            "title": "Deleted",
+            "type": "boolean"
+          },
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          }
+        },
+        "title": "DeleteResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_bitwarden-connector_chat"
+    },
+    {
+      "name": "reinvite_member",
+      "description": "Resend the invitation email to a member stuck in Invited status.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Bitwarden organization to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "member_id": {
+            "description": "The member's Bitwarden id, from list_members.",
+            "title": "Member Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "member_id"
+        ],
+        "title": "ReinviteMemberParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "deleted": {
+            "default": false,
+            "title": "Deleted",
+            "type": "boolean"
+          },
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          }
+        },
+        "title": "DeleteResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_bitwarden-connector_chat"
+    },
+    {
+      "name": "list_collections",
+      "description": "List collections (shared folders of vault items) configured in the connected Bitwarden organization.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Bitwarden organization to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "ListCollectionsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "Collection": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "name": {
+                "default": "",
+                "title": "Name",
+                "type": "string"
+              },
+              "external_id": {
+                "default": "",
+                "title": "External Id",
+                "type": "string"
+              }
+            },
+            "title": "Collection",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "collections": {
+            "items": {
+              "$ref": "#/$defs/Collection"
+            },
+            "title": "Collections",
+            "type": "array"
+          }
+        },
+        "title": "CollectionList",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_bitwarden-connector_chat"
+    },
+    {
+      "name": "get_collection",
+      "description": "Read one Bitwarden collection in full by id.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Bitwarden organization to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "collection_id": {
+            "description": "The collection's Bitwarden id, from list_collections.",
+            "title": "Collection Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "collection_id"
+        ],
+        "title": "GetCollectionParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "external_id": {
+            "default": "",
+            "title": "External Id",
+            "type": "string"
+          }
+        },
+        "title": "Collection",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_bitwarden-connector_chat"
+    },
+    {
+      "name": "delete_collection",
+      "description": "Permanently delete a Bitwarden collection. Items inside are not deleted, only unshared. Cannot be undone.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Bitwarden organization to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "collection_id": {
+            "description": "The collection's Bitwarden id, from list_collections.",
+            "title": "Collection Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "collection_id"
+        ],
+        "title": "DeleteCollectionParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "deleted": {
+            "default": false,
+            "title": "Deleted",
+            "type": "boolean"
+          },
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          }
+        },
+        "title": "DeleteResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_bitwarden-connector_chat"
+    },
+    {
+      "name": "list_groups",
+      "description": "List groups (named collections of members) configured in the connected Bitwarden organization.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Bitwarden organization to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "ListGroupsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "Group": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "name": {
+                "default": "",
+                "title": "Name",
+                "type": "string"
+              },
+              "external_id": {
+                "default": "",
+                "title": "External Id",
+                "type": "string"
+              }
+            },
+            "title": "Group",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "groups": {
+            "items": {
+              "$ref": "#/$defs/Group"
+            },
+            "title": "Groups",
+            "type": "array"
+          }
+        },
+        "title": "GroupList",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_bitwarden-connector_chat"
+    },
+    {
+      "name": "get_group",
+      "description": "Read one Bitwarden group in full by id.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Bitwarden organization to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "group_id": {
+            "description": "The group's Bitwarden id, from list_groups.",
+            "title": "Group Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "group_id"
+        ],
+        "title": "GetGroupParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "external_id": {
+            "default": "",
+            "title": "External Id",
+            "type": "string"
+          }
+        },
+        "title": "Group",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_bitwarden-connector_chat"
+    },
+    {
+      "name": "create_group",
+      "description": "Create a new group on the connected Bitwarden organization.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Bitwarden organization to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "name": {
+            "description": "Name for the new group, e.g. 'Engineering'.",
+            "title": "Name",
+            "type": "string"
+          },
+          "external_id": {
+            "default": "",
+            "description": "Optional external id to correlate this group with your IdP/HR system.",
+            "title": "External Id",
+            "type": "string"
+          },
+          "collection_ids": {
+            "description": "Collection ids this group should have access to.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Collection Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "CreateGroupParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "external_id": {
+            "default": "",
+            "title": "External Id",
+            "type": "string"
+          }
+        },
+        "title": "Group",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_bitwarden-connector_chat"
+    },
+    {
+      "name": "delete_group",
+      "description": "Permanently delete a Bitwarden group. Members keep their individual access; only the group is removed. Cannot be undone.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Bitwarden organization to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "group_id": {
+            "description": "The group's Bitwarden id, from list_groups.",
+            "title": "Group Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "group_id"
+        ],
+        "title": "DeleteGroupParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "deleted": {
+            "default": false,
+            "title": "Deleted",
+            "type": "boolean"
+          },
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          }
+        },
+        "title": "DeleteResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_bitwarden-connector_chat"
+    },
+    {
+      "name": "list_policies",
+      "description": "List organization policies (security/compliance rules, e.g. master password requirements, 2FA enforcement) configured in the connected Bitwarden organization.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Bitwarden organization to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "ListPoliciesParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "Policy": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "type": {
+                "default": 0,
+                "title": "Type",
+                "type": "integer"
+              },
+              "enabled": {
+                "default": false,
+                "title": "Enabled",
+                "type": "boolean"
+              },
+              "data": {
+                "additionalProperties": true,
+                "title": "Data",
+                "type": "object"
+              }
+            },
+            "title": "Policy",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "policies": {
+            "items": {
+              "$ref": "#/$defs/Policy"
+            },
+            "title": "Policies",
+            "type": "array"
+          }
+        },
+        "title": "PolicyList",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_bitwarden-connector_chat"
+    },
+    {
+      "name": "get_policy",
+      "description": "Read one Bitwarden organization policy in full by its type id.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Bitwarden organization to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "policy_type": {
+            "description": "Policy type id, from list_policies.",
+            "title": "Policy Type",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "policy_type"
+        ],
+        "title": "GetPolicyParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "type": {
+            "default": 0,
+            "title": "Type",
+            "type": "integer"
+          },
+          "enabled": {
+            "default": false,
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "data": {
+            "additionalProperties": true,
+            "title": "Data",
+            "type": "object"
+          }
+        },
+        "title": "Policy",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_bitwarden-connector_chat"
+    },
+    {
+      "name": "update_policy",
+      "description": "Turn a Bitwarden organization policy on/off and set its configuration data. Only given fields change.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Bitwarden organization to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "policy_type": {
+            "description": "Policy type id, from list_policies.",
+            "title": "Policy Type",
+            "type": "integer"
+          },
+          "enabled": {
+            "description": "Turn this policy on or off.",
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "data": {
+            "additionalProperties": true,
+            "description": "Policy-specific configuration data (varies by policy type).",
+            "title": "Data",
+            "type": "object"
+          }
+        },
+        "required": [
+          "policy_type",
+          "enabled"
+        ],
+        "title": "UpdatePolicyParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "type": {
+            "default": 0,
+            "title": "Type",
+            "type": "integer"
+          },
+          "enabled": {
+            "default": false,
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "data": {
+            "additionalProperties": true,
+            "title": "Data",
+            "type": "object"
+          }
+        },
+        "title": "Policy",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_bitwarden-connector_chat"
+    },
+    {
+      "name": "list_events",
+      "description": "List event log entries (the audit trail of member/collection/policy changes) for the connected Bitwarden organization, optionally filtered by date range and/or acting member.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Bitwarden organization to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "start": {
+            "default": "",
+            "description": "ISO 8601 start date/time to filter events from (optional).",
+            "title": "Start",
+            "type": "string"
+          },
+          "end": {
+            "default": "",
+            "description": "ISO 8601 end date/time to filter events to (optional).",
+            "title": "End",
+            "type": "string"
+          },
+          "actingUserId": {
+            "default": "",
+            "description": "Filter to events performed by this member id (optional).",
+            "title": "Actinguserid",
+            "type": "string"
+          }
+        },
+        "title": "ListEventsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "EventEntry": {
+            "properties": {
+              "type": {
+                "default": 0,
+                "title": "Type",
+                "type": "integer"
+              },
+              "date": {
+                "default": "",
+                "title": "Date",
+                "type": "string"
+              },
+              "acting_user_id": {
+                "default": "",
+                "title": "Acting User Id",
+                "type": "string"
+              },
+              "item_id": {
+                "default": "",
+                "title": "Item Id",
+                "type": "string"
+              },
+              "ip_address": {
+                "default": "",
+                "title": "Ip Address",
+                "type": "string"
+              }
+            },
+            "title": "EventEntry",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "events": {
+            "items": {
+              "$ref": "#/$defs/EventEntry"
+            },
+            "title": "Events",
+            "type": "array"
+          }
+        },
+        "title": "EventList",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_bitwarden-connector_chat"
+    },
+    {
+      "name": "audit_org_health",
+      "description": "Build one aggregated health report for the connected Bitwarden organization: member count by status, members without two-factor enabled, group and collection counts.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Bitwarden organization to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "AuditOrgHealthParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "MemberStatusSummary": {
+            "properties": {
+              "status_label": {
+                "default": "",
+                "title": "Status Label",
+                "type": "string"
+              },
+              "count": {
+                "default": 0,
+                "title": "Count",
+                "type": "integer"
+              }
+            },
+            "title": "MemberStatusSummary",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "total_members": {
+            "default": 0,
+            "title": "Total Members",
+            "type": "integer"
+          },
+          "by_status": {
+            "items": {
+              "$ref": "#/$defs/MemberStatusSummary"
+            },
+            "title": "By Status",
+            "type": "array"
+          },
+          "two_factor_disabled_count": {
+            "default": 0,
+            "title": "Two Factor Disabled Count",
+            "type": "integer"
+          },
+          "total_groups": {
+            "default": 0,
+            "title": "Total Groups",
+            "type": "integer"
+          },
+          "total_collections": {
+            "default": 0,
+            "title": "Total Collections",
+            "type": "integer"
+          }
+        },
+        "title": "OrgHealthReport",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_bitwarden-connector_chat"
+    },
+    {
+      "name": "get_recent_admin_activity",
+      "description": "Value-add report: read the connected Bitwarden organization's event log for the last N days -- a quick way to spot recent member/collection/policy changes without paging through the raw log.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Bitwarden organization to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "days": {
+            "default": 7,
+            "description": "Look back this many days for admin/security-relevant events.",
+            "title": "Days",
+            "type": "integer"
+          }
+        },
+        "title": "GetRecentAdminActivityParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "AdminActivityEntry": {
+            "properties": {
+              "type": {
+                "default": 0,
+                "title": "Type",
+                "type": "integer"
+              },
+              "date": {
+                "default": "",
+                "title": "Date",
+                "type": "string"
+              },
+              "acting_user_id": {
+                "default": "",
+                "title": "Acting User Id",
+                "type": "string"
+              }
+            },
+            "title": "AdminActivityEntry",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "days": {
+            "default": 0,
+            "title": "Days",
+            "type": "integer"
+          },
+          "event_count": {
+            "default": 0,
+            "title": "Event Count",
+            "type": "integer"
+          },
+          "entries": {
+            "items": {
+              "$ref": "#/$defs/AdminActivityEntry"
+            },
+            "title": "Entries",
+            "type": "array"
+          }
+        },
+        "title": "AdminActivityReport",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_bitwarden-connector_chat"
+    }
+  ],
+  "signals": [],
+  "schedules": [],
+  "required_scopes": [],
+  "icon_size_bytes": 677,
+  "panels": [
+    {
+      "panel_id": "sidebar",
+      "slot": "left",
+      "title": "",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": false
+    },
+    {
+      "panel_id": "bitwarden_settings",
+      "slot": "center",
+      "title": "",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": false
+    }
+  ]
+}
