@@ -18,7 +18,9 @@
       "description": "Connect your own Bitwarden organization by saving its Public API client_id/client_secret, after checking they actually work.",
       "action_type": "write",
       "chain_callable": true,
-      "effects": [],
+      "effects": [
+        "create:resource"
+      ],
       "id_projection": "",
       "params_schema": {
         "properties": {
@@ -67,7 +69,7 @@
         "title": "ConnectBitwardenResult",
         "type": "object"
       },
-      "event": "",
+      "event": "bitwarden-connector.connect_bitwarden",
       "background": false,
       "long_running": false,
       "scopes": [],
@@ -78,7 +80,9 @@
       "description": "Disconnect a Bitwarden organization: deletes the saved client_id/client_secret. Nothing in Bitwarden itself is changed.",
       "action_type": "write",
       "chain_callable": true,
-      "effects": [],
+      "effects": [
+        "delete:resource"
+      ],
       "id_projection": "",
       "params_schema": {
         "properties": {
@@ -110,7 +114,7 @@
         "title": "DeleteResult",
         "type": "object"
       },
-      "event": "",
+      "event": "bitwarden-connector.disconnect_bitwarden",
       "background": false,
       "long_running": false,
       "scopes": [],
@@ -340,7 +344,9 @@
       "description": "Invite a new member to the connected Bitwarden organization by email.",
       "action_type": "write",
       "chain_callable": true,
-      "effects": [],
+      "effects": [
+        "create:resource"
+      ],
       "id_projection": "",
       "params_schema": {
         "properties": {
@@ -428,7 +434,7 @@
         "title": "Member",
         "type": "object"
       },
-      "event": "",
+      "event": "bitwarden-connector.invite_member",
       "background": false,
       "long_running": false,
       "scopes": [],
@@ -439,7 +445,9 @@
       "description": "Update selected fields of an existing Bitwarden member (type and/or external_id). Only given fields change.",
       "action_type": "write",
       "chain_callable": true,
-      "effects": [],
+      "effects": [
+        "update:resource"
+      ],
       "id_projection": "",
       "params_schema": {
         "properties": {
@@ -519,7 +527,7 @@
         "title": "Member",
         "type": "object"
       },
-      "event": "",
+      "event": "bitwarden-connector.update_member",
       "background": false,
       "long_running": false,
       "scopes": [],
@@ -530,7 +538,9 @@
       "description": "Permanently remove a member from the connected Bitwarden organization. Cannot be undone.",
       "action_type": "write",
       "chain_callable": true,
-      "effects": [],
+      "effects": [
+        "delete:resource"
+      ],
       "id_projection": "",
       "params_schema": {
         "properties": {
@@ -568,7 +578,7 @@
         "title": "DeleteResult",
         "type": "object"
       },
-      "event": "",
+      "event": "bitwarden-connector.remove_member",
       "background": false,
       "long_running": false,
       "scopes": [],
@@ -579,7 +589,9 @@
       "description": "Resend the invitation email to a member stuck in Invited status.",
       "action_type": "write",
       "chain_callable": true,
-      "effects": [],
+      "effects": [
+        "update:resource"
+      ],
       "id_projection": "",
       "params_schema": {
         "properties": {
@@ -617,7 +629,7 @@
         "title": "DeleteResult",
         "type": "object"
       },
-      "event": "",
+      "event": "bitwarden-connector.reinvite_member",
       "background": false,
       "long_running": false,
       "scopes": [],
@@ -743,7 +755,9 @@
       "description": "Permanently delete a Bitwarden collection. Items inside are not deleted, only unshared. Cannot be undone.",
       "action_type": "write",
       "chain_callable": true,
-      "effects": [],
+      "effects": [
+        "delete:resource"
+      ],
       "id_projection": "",
       "params_schema": {
         "properties": {
@@ -781,7 +795,7 @@
         "title": "DeleteResult",
         "type": "object"
       },
-      "event": "",
+      "event": "bitwarden-connector.delete_collection",
       "background": false,
       "long_running": false,
       "scopes": [],
@@ -907,7 +921,9 @@
       "description": "Create a new group on the connected Bitwarden organization.",
       "action_type": "write",
       "chain_callable": true,
-      "effects": [],
+      "effects": [
+        "create:resource"
+      ],
       "id_projection": "",
       "params_schema": {
         "properties": {
@@ -964,7 +980,7 @@
         "title": "Group",
         "type": "object"
       },
-      "event": "",
+      "event": "bitwarden-connector.create_group",
       "background": false,
       "long_running": false,
       "scopes": [],
@@ -975,7 +991,9 @@
       "description": "Permanently delete a Bitwarden group. Members keep their individual access; only the group is removed. Cannot be undone.",
       "action_type": "write",
       "chain_callable": true,
-      "effects": [],
+      "effects": [
+        "delete:resource"
+      ],
       "id_projection": "",
       "params_schema": {
         "properties": {
@@ -1013,7 +1031,7 @@
         "title": "DeleteResult",
         "type": "object"
       },
-      "event": "",
+      "event": "bitwarden-connector.delete_group",
       "background": false,
       "long_running": false,
       "scopes": [],
@@ -1149,7 +1167,9 @@
       "description": "Turn a Bitwarden organization policy on/off and set its configuration data. Only given fields change.",
       "action_type": "write",
       "chain_callable": true,
-      "effects": [],
+      "effects": [
+        "update:resource"
+      ],
       "id_projection": "",
       "params_schema": {
         "properties": {
@@ -1209,7 +1229,7 @@
         "title": "Policy",
         "type": "object"
       },
-      "event": "",
+      "event": "bitwarden-connector.update_policy",
       "background": false,
       "long_running": false,
       "scopes": [],
@@ -1462,7 +1482,32 @@
   "schedules": [],
   "required_scopes": [],
   "icon_size_bytes": 677,
+  "lifecycle": {
+    "health_check": {
+      "interval_sec": 60
+    }
+  },
+  "secrets": [
+    {
+      "name": "bitwarden_connections",
+      "description": "JSON array of saved Bitwarden connections (client_id/client_secret, label).",
+      "required": false,
+      "write_mode": "extension",
+      "max_bytes": 65536,
+      "scope": "user",
+      "rotation_hint_days": 365
+    }
+  ],
   "panels": [
+    {
+      "panel_id": "secrets",
+      "slot": "right",
+      "title": "Secrets",
+      "tree": {},
+      "icon": "KeyRound",
+      "refresh": "manual",
+      "center_overlay": false
+    },
     {
       "panel_id": "sidebar",
       "slot": "left",
