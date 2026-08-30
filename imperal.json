@@ -73,7 +73,7 @@
       "background": false,
       "long_running": false,
       "scopes": [],
-      "owner_chat_tool": "tool_bitwarden-connector_chat"
+      "owner_chat_tool": "bitwarden"
     },
     {
       "name": "disconnect_bitwarden",
@@ -118,7 +118,7 @@
       "background": false,
       "long_running": false,
       "scopes": [],
-      "owner_chat_tool": "tool_bitwarden-connector_chat"
+      "owner_chat_tool": "bitwarden"
     },
     {
       "name": "list_connections",
@@ -172,7 +172,7 @@
       "background": false,
       "long_running": false,
       "scopes": [],
-      "owner_chat_tool": "tool_bitwarden-connector_chat"
+      "owner_chat_tool": "bitwarden"
     },
     {
       "name": "list_members",
@@ -258,7 +258,7 @@
       "background": false,
       "long_running": false,
       "scopes": [],
-      "owner_chat_tool": "tool_bitwarden-connector_chat"
+      "owner_chat_tool": "bitwarden"
     },
     {
       "name": "get_member",
@@ -337,7 +337,7 @@
       "background": false,
       "long_running": false,
       "scopes": [],
-      "owner_chat_tool": "tool_bitwarden-connector_chat"
+      "owner_chat_tool": "bitwarden"
     },
     {
       "name": "invite_member",
@@ -438,7 +438,7 @@
       "background": false,
       "long_running": false,
       "scopes": [],
-      "owner_chat_tool": "tool_bitwarden-connector_chat"
+      "owner_chat_tool": "bitwarden"
     },
     {
       "name": "update_member",
@@ -531,7 +531,7 @@
       "background": false,
       "long_running": false,
       "scopes": [],
-      "owner_chat_tool": "tool_bitwarden-connector_chat"
+      "owner_chat_tool": "bitwarden"
     },
     {
       "name": "remove_member",
@@ -582,7 +582,7 @@
       "background": false,
       "long_running": false,
       "scopes": [],
-      "owner_chat_tool": "tool_bitwarden-connector_chat"
+      "owner_chat_tool": "bitwarden"
     },
     {
       "name": "reinvite_member",
@@ -633,7 +633,7 @@
       "background": false,
       "long_running": false,
       "scopes": [],
-      "owner_chat_tool": "tool_bitwarden-connector_chat"
+      "owner_chat_tool": "bitwarden"
     },
     {
       "name": "list_collections",
@@ -694,7 +694,7 @@
       "background": false,
       "long_running": false,
       "scopes": [],
-      "owner_chat_tool": "tool_bitwarden-connector_chat"
+      "owner_chat_tool": "bitwarden"
     },
     {
       "name": "get_collection",
@@ -748,7 +748,7 @@
       "background": false,
       "long_running": false,
       "scopes": [],
-      "owner_chat_tool": "tool_bitwarden-connector_chat"
+      "owner_chat_tool": "bitwarden"
     },
     {
       "name": "delete_collection",
@@ -799,7 +799,7 @@
       "background": false,
       "long_running": false,
       "scopes": [],
-      "owner_chat_tool": "tool_bitwarden-connector_chat"
+      "owner_chat_tool": "bitwarden"
     },
     {
       "name": "list_groups",
@@ -860,7 +860,7 @@
       "background": false,
       "long_running": false,
       "scopes": [],
-      "owner_chat_tool": "tool_bitwarden-connector_chat"
+      "owner_chat_tool": "bitwarden"
     },
     {
       "name": "get_group",
@@ -914,7 +914,7 @@
       "background": false,
       "long_running": false,
       "scopes": [],
-      "owner_chat_tool": "tool_bitwarden-connector_chat"
+      "owner_chat_tool": "bitwarden"
     },
     {
       "name": "create_group",
@@ -984,7 +984,7 @@
       "background": false,
       "long_running": false,
       "scopes": [],
-      "owner_chat_tool": "tool_bitwarden-connector_chat"
+      "owner_chat_tool": "bitwarden"
     },
     {
       "name": "delete_group",
@@ -1035,7 +1035,7 @@
       "background": false,
       "long_running": false,
       "scopes": [],
-      "owner_chat_tool": "tool_bitwarden-connector_chat"
+      "owner_chat_tool": "bitwarden"
     },
     {
       "name": "list_policies",
@@ -1101,7 +1101,7 @@
       "background": false,
       "long_running": false,
       "scopes": [],
-      "owner_chat_tool": "tool_bitwarden-connector_chat"
+      "owner_chat_tool": "bitwarden"
     },
     {
       "name": "get_policy",
@@ -1160,7 +1160,7 @@
       "background": false,
       "long_running": false,
       "scopes": [],
-      "owner_chat_tool": "tool_bitwarden-connector_chat"
+      "owner_chat_tool": "bitwarden"
     },
     {
       "name": "update_policy",
@@ -1233,7 +1233,7 @@
       "background": false,
       "long_running": false,
       "scopes": [],
-      "owner_chat_tool": "tool_bitwarden-connector_chat"
+      "owner_chat_tool": "bitwarden"
     },
     {
       "name": "list_events",
@@ -1322,7 +1322,7 @@
       "background": false,
       "long_running": false,
       "scopes": [],
-      "owner_chat_tool": "tool_bitwarden-connector_chat"
+      "owner_chat_tool": "bitwarden"
     },
     {
       "name": "audit_org_health",
@@ -1398,7 +1398,7 @@
       "background": false,
       "long_running": false,
       "scopes": [],
-      "owner_chat_tool": "tool_bitwarden-connector_chat"
+      "owner_chat_tool": "bitwarden"
     },
     {
       "name": "get_recent_admin_activity",
@@ -1475,7 +1475,7 @@
       "background": false,
       "long_running": false,
       "scopes": [],
-      "owner_chat_tool": "tool_bitwarden-connector_chat"
+      "owner_chat_tool": "bitwarden"
     }
   ],
   "signals": [],

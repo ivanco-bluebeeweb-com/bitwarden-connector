@@ -44,7 +44,7 @@ ext = Extension(
     ),
 )
 
-chat = ChatExtension(ext)
+chat = ChatExtension(ext, tool_name="bitwarden")
 
 ext.secret(
     "bitwarden_connections", "JSON array of saved Bitwarden connections (client_id/client_secret, label).",
