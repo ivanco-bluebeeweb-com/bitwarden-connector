@@ -70,8 +70,8 @@ def _help_modal() -> ui.UINode:
     )
 
 
-@ext.panel("sidebar", slot="left")
-async def sidebar(ctx, **kwargs) -> object:
+@ext.panel("bitwarden_connect", slot="left", title="Bitwarden")
+async def bitwarden_connect_panel(ctx, **kwargs) -> object:
     connections = await h._load_connections(ctx)
     return ui.Stack(direction="v", gap=3, children=[
         ui.Text("Bitwarden", variant="heading"),
@@ -98,4 +98,16 @@ async def sidebar(ctx, **kwargs) -> object:
         _help_modal(),
         ui.Divider(),
         _settings_button(),
+    ])
+
+
+@ext.panel("bitwarden_connect_help", slot="overlay", title="How do I set this up?")
+async def bitwarden_connect_help(ctx, **kwargs) -> object:
+    return ui.Stack(direction="v", gap=3, children=[
+        ui.Text("1. Sign in to the Bitwarden web vault and open your organization."),
+        ui.Text("2. Go to Settings > My Organization > API Key and generate/view the organization's "
+                "client_id (format organization.{uuid}) and client_secret."),
+        ui.Text("3. Paste both values into the form on the left, then click Connect."),
+        ui.Text("This connects the Public (organization-management) API only -- members, collections, "
+                "groups, policies and event logs. Individual vault item passwords are never read."),
     ])

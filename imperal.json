@@ -1509,9 +1509,18 @@
       "center_overlay": false
     },
     {
-      "panel_id": "sidebar",
+      "panel_id": "bitwarden_connect",
       "slot": "left",
-      "title": "",
+      "title": "Bitwarden",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": false
+    },
+    {
+      "panel_id": "bitwarden_connect_help",
+      "slot": "overlay",
+      "title": "How do I set this up?",
       "tree": {},
       "icon": "",
       "refresh": "manual",
