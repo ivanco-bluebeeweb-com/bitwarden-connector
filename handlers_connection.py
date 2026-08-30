@@ -78,7 +78,7 @@ def _connection_to_entity(c: dict) -> BitwardenConnection:
     "connect_bitwarden",
     "Connect your own Bitwarden organization by saving its Public API client_id/client_secret, after "
     "checking they actually work.",
-    action_type="write", chain_callable=True, data_model=ConnectBitwardenResult,
+    action_type="write", event="bitwarden-connector.connect_bitwarden", effects=['create:resource'], chain_callable=True, data_model=ConnectBitwardenResult,
 )
 async def connect_bitwarden(ctx, params: ConnectBitwardenParams) -> ActionResult:
     """Exchange client_id/client_secret for an access token, verify against /public/members, then save."""
@@ -108,9 +108,10 @@ async def connect_bitwarden(ctx, params: ConnectBitwardenParams) -> ActionResult
     "disconnect_bitwarden",
     "Disconnect a Bitwarden organization: deletes the saved client_id/client_secret. Nothing in Bitwarden "
     "itself is changed.",
-    action_type="write", chain_callable=True, data_model=DeleteResult,
+    action_type="write", event="bitwarden-connector.disconnect_bitwarden", effects=['delete:resource'], chain_callable=True, data_model=DeleteResult,
 )
 async def disconnect_bitwarden(ctx, params: DisconnectBitwardenParams) -> ActionResult:
+    """Delete a saved Bitwarden connection by id; nothing in Bitwarden itself changes."""
     connections = await _load_connections(ctx)
     remaining = [c for c in connections if c.get("id") != params.connection_id]
     if len(remaining) == len(connections):

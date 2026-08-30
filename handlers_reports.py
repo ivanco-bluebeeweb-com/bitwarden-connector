@@ -62,6 +62,7 @@ async def audit_org_health(ctx, params: AuditOrgHealthParams) -> ActionResult:
     action_type="read", chain_callable=True, data_model=AdminActivityReport,
 )
 async def get_recent_admin_activity(ctx, params: GetRecentAdminActivityParams) -> ActionResult:
+    """Summarize the last N days of member/collection/policy changes as one report."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err

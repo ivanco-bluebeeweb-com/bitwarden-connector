@@ -54,6 +54,7 @@ def _member_entity(m: dict) -> Member:
     action_type="read", chain_callable=True, data_model=MemberList,
 )
 async def list_members(ctx, params: ListMembersParams) -> ActionResult:
+    """List organization members (name, email, status, two-factor state) from the Public API."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err
@@ -71,6 +72,7 @@ async def list_members(ctx, params: ListMembersParams) -> ActionResult:
     action_type="read", chain_callable=True, data_model=Member,
 )
 async def get_member(ctx, params: GetMemberParams) -> ActionResult:
+    """Read one organization member in full by member id."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err
@@ -84,9 +86,10 @@ async def get_member(ctx, params: GetMemberParams) -> ActionResult:
 @chat.function(
     "invite_member",
     "Invite a new member to the connected Bitwarden organization by email.",
-    action_type="write", chain_callable=True, data_model=Member,
+    action_type="write", event="bitwarden-connector.invite_member", effects=['create:resource'], chain_callable=True, data_model=Member,
 )
 async def invite_member(ctx, params: InviteMemberParams) -> ActionResult:
+    """Invite a new member to the organization by email with a given type and optional access rules."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err
@@ -104,9 +107,10 @@ async def invite_member(ctx, params: InviteMemberParams) -> ActionResult:
 @chat.function(
     "update_member",
     "Update selected fields of an existing Bitwarden member (type and/or external_id). Only given fields change.",
-    action_type="write", chain_callable=True, data_model=Member,
+    action_type="write", event="bitwarden-connector.update_member", effects=['update:resource'], chain_callable=True, data_model=Member,
 )
 async def update_member(ctx, params: UpdateMemberParams) -> ActionResult:
+    """Update an existing member's type or external_id; only supplied fields change."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err
@@ -130,9 +134,10 @@ async def update_member(ctx, params: UpdateMemberParams) -> ActionResult:
 @chat.function(
     "remove_member",
     "Permanently remove a member from the connected Bitwarden organization. Cannot be undone.",
-    action_type="write", chain_callable=True, data_model=DeleteResult,
+    action_type="write", event="bitwarden-connector.remove_member", effects=['delete:resource'], chain_callable=True, data_model=DeleteResult,
 )
 async def remove_member(ctx, params: RemoveMemberParams) -> ActionResult:
+    """Permanently remove a member from the organization. Cannot be undone."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err
@@ -146,9 +151,10 @@ async def remove_member(ctx, params: RemoveMemberParams) -> ActionResult:
 @chat.function(
     "reinvite_member",
     "Resend the invitation email to a member stuck in Invited status.",
-    action_type="write", chain_callable=True, data_model=DeleteResult,
+    action_type="write", event="bitwarden-connector.reinvite_member", effects=['update:resource'], chain_callable=True, data_model=DeleteResult,
 )
 async def reinvite_member(ctx, params: ReinviteMemberParams) -> ActionResult:
+    """Resend the invitation email to a member still in Invited status."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err
@@ -169,6 +175,7 @@ def _collection_entity(c: dict) -> Collection:
     action_type="read", chain_callable=True, data_model=CollectionList,
 )
 async def list_collections(ctx, params: ListCollectionsParams) -> ActionResult:
+    """List collections (shared folders of vault items) configured in the organization."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err
@@ -186,6 +193,7 @@ async def list_collections(ctx, params: ListCollectionsParams) -> ActionResult:
     action_type="read", chain_callable=True, data_model=Collection,
 )
 async def get_collection(ctx, params: GetCollectionParams) -> ActionResult:
+    """Read one collection in full by id."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err
@@ -199,9 +207,10 @@ async def get_collection(ctx, params: GetCollectionParams) -> ActionResult:
 @chat.function(
     "delete_collection",
     "Permanently delete a Bitwarden collection. Items inside are not deleted, only unshared. Cannot be undone.",
-    action_type="write", chain_callable=True, data_model=DeleteResult,
+    action_type="write", event="bitwarden-connector.delete_collection", effects=['delete:resource'], chain_callable=True, data_model=DeleteResult,
 )
 async def delete_collection(ctx, params: DeleteCollectionParams) -> ActionResult:
+    """Permanently delete a collection; items inside are not deleted, only unlinked."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err
@@ -222,6 +231,7 @@ def _group_entity(g: dict) -> Group:
     action_type="read", chain_callable=True, data_model=GroupList,
 )
 async def list_groups(ctx, params: ListGroupsParams) -> ActionResult:
+    """List groups (named collections of members) configured in the organization."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err
@@ -239,6 +249,7 @@ async def list_groups(ctx, params: ListGroupsParams) -> ActionResult:
     action_type="read", chain_callable=True, data_model=Group,
 )
 async def get_group(ctx, params: GetGroupParams) -> ActionResult:
+    """Read one group in full by id."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err
@@ -252,9 +263,10 @@ async def get_group(ctx, params: GetGroupParams) -> ActionResult:
 @chat.function(
     "create_group",
     "Create a new group on the connected Bitwarden organization.",
-    action_type="write", chain_callable=True, data_model=Group,
+    action_type="write", event="bitwarden-connector.create_group", effects=['create:resource'], chain_callable=True, data_model=Group,
 )
 async def create_group(ctx, params: CreateGroupParams) -> ActionResult:
+    """Create a new group with an explicit name and member/collection assignments."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err
@@ -271,9 +283,10 @@ async def create_group(ctx, params: CreateGroupParams) -> ActionResult:
     "delete_group",
     "Permanently delete a Bitwarden group. Members keep their individual access; only the group is removed. "
     "Cannot be undone.",
-    action_type="write", chain_callable=True, data_model=DeleteResult,
+    action_type="write", event="bitwarden-connector.delete_group", effects=['delete:resource'], chain_callable=True, data_model=DeleteResult,
 )
 async def delete_group(ctx, params: DeleteGroupParams) -> ActionResult:
+    """Permanently delete a group; members keep their individual access."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err
@@ -295,6 +308,7 @@ def _policy_entity(p: dict) -> Policy:
     action_type="read", chain_callable=True, data_model=PolicyList,
 )
 async def list_policies(ctx, params: ListPoliciesParams) -> ActionResult:
+    """List organization policies (security/compliance rules) and their enabled state."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err
@@ -312,6 +326,7 @@ async def list_policies(ctx, params: ListPoliciesParams) -> ActionResult:
     action_type="read", chain_callable=True, data_model=Policy,
 )
 async def get_policy(ctx, params: GetPolicyParams) -> ActionResult:
+    """Read one policy in full by its policy type id."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err
@@ -325,9 +340,10 @@ async def get_policy(ctx, params: GetPolicyParams) -> ActionResult:
 @chat.function(
     "update_policy",
     "Turn a Bitwarden organization policy on/off and set its configuration data. Only given fields change.",
-    action_type="write", chain_callable=True, data_model=Policy,
+    action_type="write", event="bitwarden-connector.update_policy", effects=['update:resource'], chain_callable=True, data_model=Policy,
 )
 async def update_policy(ctx, params: UpdatePolicyParams) -> ActionResult:
+    """Turn a policy on/off and set its configuration data; only supplied fields change."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err
@@ -354,6 +370,7 @@ def _event_entity(e: dict) -> EventEntry:
     action_type="read", chain_callable=True, data_model=EventList,
 )
 async def list_events(ctx, params: ListEventsParams) -> ActionResult:
+    """Read the organization event log (audit trail) over an explicit date range."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err

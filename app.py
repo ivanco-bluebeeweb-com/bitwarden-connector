@@ -45,3 +45,14 @@ ext = Extension(
 )
 
 chat = ChatExtension(ext)
+
+ext.secret(
+    "bitwarden_connections", "JSON array of saved Bitwarden connections (client_id/client_secret, label).",
+    required=False, write_mode="extension", max_bytes=65536, rotation_hint_days=365,
+)
+
+
+@ext.health_check
+async def health_check(ctx):
+    raw = await ctx.secrets.get("bitwarden_connections")
+    return {"ok": True, "has_connections": bool(raw)}
