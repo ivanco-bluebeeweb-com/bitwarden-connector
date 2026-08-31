@@ -46,13 +46,13 @@ async def audit_org_health(ctx, params: AuditOrgHealthParams) -> ActionResult:
         by_status[label] = by_status.get(label, 0) + 1
         if not m.get("twoFactorEnabled", False):
             two_fa_disabled += 1
-    return ActionResult.ok(OrgHealthReport(
+    return ActionResult.success(OrgHealthReport(
         total_members=len(members),
         by_status=[MemberStatusSummary(status_label=k, count=v) for k, v in by_status.items()],
         two_factor_disabled_count=two_fa_disabled,
         total_groups=len(groups),
         total_collections=len(collections),
-    ))
+    ), summary="Org health audit ready.")
 
 
 @chat.function(
@@ -76,4 +76,4 @@ async def get_recent_admin_activity(ctx, params: GetRecentAdminActivityParams) -
         AdminActivityEntry(type=e.get("type", 0), date=e.get("date", ""), acting_user_id=e.get("actingUserId") or "")
         for e in data
     ]
-    return ActionResult.ok(AdminActivityReport(days=params.days, event_count=len(entries), entries=entries))
+    return ActionResult.success(AdminActivityReport(days=params.days, event_count=len(entries), entries=entries), summary="Recent admin activity retrieved.")

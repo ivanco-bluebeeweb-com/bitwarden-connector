@@ -63,7 +63,7 @@ async def list_members(ctx, params: ListMembersParams) -> ActionResult:
     except bc.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
     data = resp.get("data", []) if isinstance(resp, dict) else []
-    return ActionResult.ok(MemberList(members=[_member_entity(m) for m in data]))
+    return ActionResult.success(MemberList(members=[_member_entity(m) for m in data]), summary="Members listed.")
 
 
 @chat.function(
@@ -80,7 +80,7 @@ async def get_member(ctx, params: GetMemberParams) -> ActionResult:
         m = await bc.request(ctx, conn, "GET", f"/public/members/{params.member_id}", action="get member")
     except bc.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
-    return ActionResult.ok(_member_entity(m))
+    return ActionResult.success(_member_entity(m), summary="Member retrieved.")
 
 
 @chat.function(
@@ -101,7 +101,7 @@ async def invite_member(ctx, params: InviteMemberParams) -> ActionResult:
         m = await bc.request(ctx, conn, "POST", "/public/members", json_body=body, action="invite member")
     except bc.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
-    return ActionResult.ok(_member_entity(m))
+    return ActionResult.success(_member_entity(m), summary="Invite member done.")
 
 
 @chat.function(
@@ -128,7 +128,7 @@ async def update_member(ctx, params: UpdateMemberParams) -> ActionResult:
         m = await bc.request(ctx, conn, "PUT", f"/public/members/{params.member_id}", json_body=body, action="update member")
     except bc.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
-    return ActionResult.ok(_member_entity(m))
+    return ActionResult.success(_member_entity(m), summary="Member updated.")
 
 
 @chat.function(
@@ -145,7 +145,7 @@ async def remove_member(ctx, params: RemoveMemberParams) -> ActionResult:
         await bc.request(ctx, conn, "DELETE", f"/public/members/{params.member_id}", action="remove member")
     except bc.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
-    return ActionResult.ok(DeleteResult(deleted=True, id=params.member_id))
+    return ActionResult.success(DeleteResult(deleted=True, id=params.member_id), summary="Member deleted.")
 
 
 @chat.function(
@@ -162,7 +162,7 @@ async def reinvite_member(ctx, params: ReinviteMemberParams) -> ActionResult:
         await bc.request(ctx, conn, "POST", f"/public/members/{params.member_id}/reinvite", action="reinvite member")
     except bc.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
-    return ActionResult.ok(DeleteResult(deleted=False, id=params.member_id))
+    return ActionResult.success(DeleteResult(deleted=False, id=params.member_id), summary="Reinvite member done.")
 
 
 def _collection_entity(c: dict) -> Collection:
@@ -184,7 +184,7 @@ async def list_collections(ctx, params: ListCollectionsParams) -> ActionResult:
     except bc.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
     data = resp.get("data", []) if isinstance(resp, dict) else []
-    return ActionResult.ok(CollectionList(collections=[_collection_entity(c) for c in data]))
+    return ActionResult.success(CollectionList(collections=[_collection_entity(c) for c in data]), summary="Collections listed.")
 
 
 @chat.function(
@@ -201,7 +201,7 @@ async def get_collection(ctx, params: GetCollectionParams) -> ActionResult:
         c = await bc.request(ctx, conn, "GET", f"/public/collections/{params.collection_id}", action="get collection")
     except bc.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
-    return ActionResult.ok(_collection_entity(c))
+    return ActionResult.success(_collection_entity(c), summary="Collection retrieved.")
 
 
 @chat.function(
@@ -218,7 +218,7 @@ async def delete_collection(ctx, params: DeleteCollectionParams) -> ActionResult
         await bc.request(ctx, conn, "DELETE", f"/public/collections/{params.collection_id}", action="delete collection")
     except bc.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
-    return ActionResult.ok(DeleteResult(deleted=True, id=params.collection_id))
+    return ActionResult.success(DeleteResult(deleted=True, id=params.collection_id), summary="Collection deleted.")
 
 
 def _group_entity(g: dict) -> Group:
@@ -240,7 +240,7 @@ async def list_groups(ctx, params: ListGroupsParams) -> ActionResult:
     except bc.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
     data = resp.get("data", []) if isinstance(resp, dict) else []
-    return ActionResult.ok(GroupList(groups=[_group_entity(g) for g in data]))
+    return ActionResult.success(GroupList(groups=[_group_entity(g) for g in data]), summary="Groups listed.")
 
 
 @chat.function(
@@ -257,7 +257,7 @@ async def get_group(ctx, params: GetGroupParams) -> ActionResult:
         g = await bc.request(ctx, conn, "GET", f"/public/groups/{params.group_id}", action="get group")
     except bc.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
-    return ActionResult.ok(_group_entity(g))
+    return ActionResult.success(_group_entity(g), summary="Group retrieved.")
 
 
 @chat.function(
@@ -276,7 +276,7 @@ async def create_group(ctx, params: CreateGroupParams) -> ActionResult:
         g = await bc.request(ctx, conn, "POST", "/public/groups", json_body=body, action="create group")
     except bc.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
-    return ActionResult.ok(_group_entity(g))
+    return ActionResult.success(_group_entity(g), summary="Group created.")
 
 
 @chat.function(
@@ -294,7 +294,7 @@ async def delete_group(ctx, params: DeleteGroupParams) -> ActionResult:
         await bc.request(ctx, conn, "DELETE", f"/public/groups/{params.group_id}", action="delete group")
     except bc.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
-    return ActionResult.ok(DeleteResult(deleted=True, id=params.group_id))
+    return ActionResult.success(DeleteResult(deleted=True, id=params.group_id), summary="Group deleted.")
 
 
 def _policy_entity(p: dict) -> Policy:
@@ -317,7 +317,7 @@ async def list_policies(ctx, params: ListPoliciesParams) -> ActionResult:
     except bc.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
     data = resp.get("data", []) if isinstance(resp, dict) else []
-    return ActionResult.ok(PolicyList(policies=[_policy_entity(p) for p in data]))
+    return ActionResult.success(PolicyList(policies=[_policy_entity(p) for p in data]), summary="Policies listed.")
 
 
 @chat.function(
@@ -334,7 +334,7 @@ async def get_policy(ctx, params: GetPolicyParams) -> ActionResult:
         p = await bc.request(ctx, conn, "GET", f"/public/policies/{params.policy_type}", action="get policy")
     except bc.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
-    return ActionResult.ok(_policy_entity(p))
+    return ActionResult.success(_policy_entity(p), summary="Policy retrieved.")
 
 
 @chat.function(
@@ -352,7 +352,7 @@ async def update_policy(ctx, params: UpdatePolicyParams) -> ActionResult:
         p = await bc.request(ctx, conn, "PUT", f"/public/policies/{params.policy_type}", json_body=body, action="update policy")
     except bc.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
-    return ActionResult.ok(_policy_entity(p))
+    return ActionResult.success(_policy_entity(p), summary="Policy updated.")
 
 
 def _event_entity(e: dict) -> EventEntry:
@@ -386,4 +386,4 @@ async def list_events(ctx, params: ListEventsParams) -> ActionResult:
     except bc.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
     data = resp.get("data", []) if isinstance(resp, dict) else []
-    return ActionResult.ok(EventList(events=[_event_entity(e) for e in data]))
+    return ActionResult.success(EventList(events=[_event_entity(e) for e in data]), summary="Events listed.")

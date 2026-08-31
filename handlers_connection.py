@@ -99,9 +99,9 @@ async def connect_bitwarden(ctx, params: ConnectBitwardenParams) -> ActionResult
     data = members.get("data", []) if isinstance(members, dict) else []
     conn["member_count"] = len(data)
     await _persist_conn(ctx, conn)
-    return ActionResult.ok(ConnectBitwardenResult(
+    return ActionResult.success(ConnectBitwardenResult(
         connection_id=conn["id"], label=conn["label"], member_count=conn["member_count"],
-    ))
+    ), summary="Bitwarden connected.")
 
 
 @chat.function(
@@ -117,7 +117,7 @@ async def disconnect_bitwarden(ctx, params: DisconnectBitwardenParams) -> Action
     if len(remaining) == len(connections):
         return ActionResult.error("Connection not found.", code=bc.BW_NOT_FOUND)
     await _save_connections(ctx, remaining)
-    return ActionResult.ok(DeleteResult(deleted=True, id=params.connection_id))
+    return ActionResult.success(DeleteResult(deleted=True, id=params.connection_id), summary="Bitwarden disconnected.")
 
 
 @chat.function(
@@ -128,4 +128,4 @@ async def disconnect_bitwarden(ctx, params: DisconnectBitwardenParams) -> Action
 async def list_connections(ctx, params: ListConnectionsParams) -> ActionResult:
     """List saved Bitwarden organization connections."""
     connections = await _load_connections(ctx)
-    return ActionResult.ok(ConnectionList(connections=[_connection_to_entity(c) for c in connections]))
+    return ActionResult.success(ConnectionList(connections=[_connection_to_entity(c) for c in connections]), summary="Connections listed.")
