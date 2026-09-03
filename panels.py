@@ -77,6 +77,9 @@ async def bitwarden_connect_panel(ctx, **kwargs) -> object:
         ui.Text("Bitwarden", variant="heading"),
         _connections_section(connections),
         ui.Divider(),
+        ui.Button("Sign in with Bitwarden (OAuth / SSO)", variant="primary", size="sm", full_width=True, icon="login"),
+        ui.Divider(),
+        ui.Text("Or connect via Public API Client Credentials", variant="caption"),
         ui.Form(
             submit_label="Connect",
             action=ui.Call("connect_bitwarden"),
