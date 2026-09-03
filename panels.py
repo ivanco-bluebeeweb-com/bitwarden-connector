@@ -25,8 +25,7 @@ import handlers_connection as h
 
 def _settings_button() -> ui.UINode:
     return ui.Button(
-        "App settings", variant="secondary", size="sm", full_width=True,
-        icon="settings", on_click=ui.Call("__panel__bitwarden_settings"),
+        "App settings", variant="secondary", size="sm", icon="settings", on_click=ui.Call("__panel__bitwarden_settings"),
     )
 
 
@@ -51,7 +50,7 @@ def _connections_section(connections: list[dict]) -> ui.UINode:
 
 def _help_modal() -> ui.UINode:
     return ui.Modal(
-        trigger=ui.Button("How do I set this up?", variant="ghost", size="sm", full_width=True),
+        trigger=ui.Button("How do I set this up?", variant="ghost", size="sm"),
         title="Connecting Bitwarden",
         children=[
             ui.Text(
@@ -77,7 +76,7 @@ async def bitwarden_connect_panel(ctx, **kwargs) -> object:
         ui.Text("Bitwarden", variant="heading"),
         _connections_section(connections),
         ui.Divider(),
-        ui.Button("Sign in with Bitwarden (OAuth / SSO)", variant="primary", size="sm", full_width=True, icon="login"),
+        ui.Button("Sign in with Bitwarden (OAuth / SSO)", variant="primary", size="sm", icon="login"),
         ui.Divider(),
         ui.Text("Or connect via Public API Client Credentials", variant="caption"),
         ui.Form(
